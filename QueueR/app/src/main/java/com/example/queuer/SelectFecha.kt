@@ -4,27 +4,27 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.activity_select_store.*
+import kotlinx.android.synthetic.main.activity_select_fecha.*
 
-class SelectStore : AppCompatActivity(), View.OnClickListener {
+class SelectFecha : AppCompatActivity(), View.OnClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_select_store)
+        setContentView(R.layout.activity_select_fecha)
 
-        araButton.setOnClickListener(this)
+        confirmarFecha.setOnClickListener(this)
     }
+
 
     override fun onClick(v: View) {
         val i = v.id
 
         when (i) {
-            R.id.araButton -> goAra()
+            R.id.confirmarFecha -> goHora()
         }
     }
-    private fun goAra() {
-        val intent = Intent(this, SelectFecha::class.java)
+    private fun goHora() {
+        val intent = Intent(this, SelectHora::class.java)
         startActivity(intent)
     }
 

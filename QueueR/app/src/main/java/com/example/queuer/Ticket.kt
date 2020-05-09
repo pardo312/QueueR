@@ -8,15 +8,17 @@ import android.util.Log
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.firestore.FirebaseFirestore
 import java.net.URL
 
 class Ticket : AppCompatActivity() {
-
+    lateinit var db: FirebaseFirestore
+    val qrCode: String = (1000..9999).random().toString()
+    val qrTranslation:String ="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data="
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_ticket)
-        val qrCode: String = (1000..9999).random().toString()
-        val qrTranslation:String ="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=2"
+
         val qrImage = qrTranslation+qrCode
 
 
@@ -42,11 +44,37 @@ class Ticket : AppCompatActivity() {
         override fun onPostExecute(result: Bitmap?) {
             if(result!=null){
                 // Display the downloaded image into image view
-                Toast.makeText(imageView.context,"download success",Toast.LENGTH_SHORT).show()
+                Toast.makeText(imageView.context,"Turno Correctamente Asignado",Toast.LENGTH_SHORT).show()
                 imageView.setImageBitmap(result)
+
             }else{
-                Toast.makeText(imageView.context,"Error downloading",Toast.LENGTH_SHORT).show()
+                Toast.makeText(imageView.context,"Error reservando turno. Porfavor Revisa tu conexion.",Toast.LENGTH_SHORT).show()
             }
         }
+    }
+    private fun writeFirebase() {
+
+        db = FirebaseFirestore.getInstance()
+        var lista:MutableList<String> = mutableListOf<String>()
+
+
+        db.collection("QueueR").document("Tickets").get()
+            .addOnSuccessListener { document ->
+
+                val p = document.data?.size!!;
+                val ticket = document.data?.get("tck$p") as MutableList<String>
+
+                lista.add(ticket.get(0))
+                lista.add(qrCode)
+                db.collection("QueueR").document("Tickets").update(mapOf(
+                        "tcl"+(p+1) to lista
+                    ))
+
+
+            }
+            .addOnFailureListener { exception ->
+                Log.d("InstruccionesActivity", "get failed with ", exception)
+            }
+
     }
 }
